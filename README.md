@@ -1,4 +1,4 @@
-# minimalistic-todo-list
+# minimalistic-todo-list (node-backend)
 
 To install dependecies and run just execute:
 
