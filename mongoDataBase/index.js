@@ -1,5 +1,5 @@
 const { MongoClient, ObjectId } = require('mongodb');
-const url = process.env.MONGO_DB_URL || 'mongodb://localhost:27017/inovation';
+const url = process.env.MONGODB_URI || process.env.MONGO_DB_URL || 'mongodb://localhost:27017/inovation';
 
 const initialize = (collectionName, done) => {
 
