@@ -1,4 +1,4 @@
-const {MongoClient, ObjectId} = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb');
 const url = process.env.MONGO_DB_URL;
 
 const initialize = collectionName => {
@@ -6,11 +6,7 @@ const initialize = collectionName => {
   let db = null;
   let collection = null;
 
-  MongoClient.connect(url, (err, dataBase) => {
-    console.info('Connected correctly to mongo-server :)');
-    db = dataBase;
-    collection = db.collection(collectionName);
-  });
+  const _objectId = id => ({ _id: new ObjectId(id) });
 
   const execute = (action, params, options) => {
     if (!collection[action])
@@ -26,14 +22,38 @@ const initialize = collectionName => {
     })
   };
 
-  const _objectId = id => ({"_id": new ObjectId(id)});
+  const createDocument = (data) => {
+    return execute('insert', [data])
+      .then(result => {
+        return Promise.resolve(result.ops[0]);
+      });
+  };
+
+  const findAndUpdate = (objectId, data) => {
+    return execute('findOne', [_objectId(objectId)])
+      .then((obj) => {
+        const merge = Object.assign(obj,data);
+        delete merge._id;
+        return execute('updateOne', [_objectId(objectId), merge]);
+    });
+  };
+
+
+  MongoClient.connect(url, (err, dataBase) => {
+
+    if (!err) console.info('Connected correctly to mongo-server :)');
+    else return console.log('Error when try to connect to mongo-database!')
+
+    db = dataBase;
+    collection = db.collection(collectionName);
+  });
 
   return {
-    insert: data => execute('insert', [data]),
+    insert: createDocument,
+    update: findAndUpdate,
     find: () => execute('find', [{}]).then(extractArrayFromCursor),
     get: objectId => execute('findOne', [_objectId(objectId)]),
-    update: (objectId, data) => execute('updateOne', [_objectId(objectId), data]),
-    remove: (objectId) => execute('deleteOne',[_objectId(objectId)])
+    remove: (objectId) => execute('deleteOne', [_objectId(objectId)])
   };
 
 };
