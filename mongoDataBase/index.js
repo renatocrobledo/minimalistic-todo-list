@@ -48,7 +48,7 @@ const initialize = (collectionName, done) => {
 
   MongoClient.connect(url, (err, dataBase) => {
 
-    if (err) return console.log('Error when try to connect to mongo-database!');
+    if (err) return console.log('Error when try to connect to mongo-database!', err);
 
     db = dataBase;
     collection = db.collection(collectionName);
