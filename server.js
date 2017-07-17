@@ -21,6 +21,8 @@ app.use(bodyParser.urlencoded({
 
 app.use(bodyParser.json());
 
+app.use(express.static('public'))
+
 const crud = (action, params, res) => {
   action(params)
     .then(result => res.json(result))
