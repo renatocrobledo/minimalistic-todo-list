@@ -4,7 +4,8 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT;
 const bodyParser = require('body-parser');
-const dbConnector = require('./mongoDataBase').initialize('TodoList');
+const collectionName = process.env.NODE_ENV === 'test' ? 'TodoList-test' : 'TodoList';
+const dbConnector = require('./mongoDataBase').initialize(collectionName);
 const todoList = require('./todoList')(dbConnector);
 const allowCrossDomain = (req, res, next) => {
   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE')
@@ -23,7 +24,7 @@ app.use(bodyParser.json());
 const crud = (action, params, res) => {
   action(params)
     .then(result => res.json(result))
-    .catch(err => res.json(err));
+    .catch(err => res.status(400).json(err));
 };
 
 app.route('/tasks')
@@ -37,4 +38,8 @@ app.route('/tasks/:taskId')
 
 app.listen(port);
 
+module.exports = {
+  app,
+  todoList
+};
 console.log(`TODO list RESTful API server started on: ${port}`);
