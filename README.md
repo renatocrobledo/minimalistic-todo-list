@@ -2,7 +2,7 @@
 
 To install dependecies and run just execute:
 
-```npm run start```
+```npm start```
 
 To run test please execute:
 
